@@ -1,40 +1,70 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
-<?import javafx.scene.text.*?>
+<?import com.jfoenix.controls.JFXButton?>
+<?import com.jfoenix.controls.JFXListView?>
+<?import com.jfoenix.controls.JFXTextArea?>
+<?import com.jfoenix.controls.JFXTextField?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 <?import javafx.collections.*?>
 
-<AnchorPane prefHeight ="480" prefWidth ="750" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.Controller">
-	<children>
-		<ListView fx:id="networkListView" layoutX="15" layoutY="14" prefHeight="86" prefWidth="462">
-			<items>
-				<FXCollections fx:factory="observableArrayList"/>
-			</items>
-		</ListView>
-		<Button fx:id ="pickButton" onAction="#networkPickAction" layoutX="395" layoutY="112" prefHeight="29" prefWidth="82" text="PICK"></Button>
-		<TextArea fx:id="textArea" editable="false" layoutX="15" layoutY="156" prefHeight="325" prefWidth="462"></TextArea>
-		<Label layoutX="486" layoutY ="14" text="My IP">
-			<font>
-				<Font size ="15"/>
-			</font>
-		</Label>
-		<Label layoutX="486" layoutY ="44" text="Sender IP">
-			<font>
-				<Font size ="15"/>
-			</font>
-		</Label>
-		<Label layoutX="486" layoutY ="75" text="Target IP">
-			<font>
-				<Font size ="15"/>
-			</font>
-		</Label>
-		<TextField fx:id ="myIP" layoutX="562" layoutY="12" prefHeight="23" prefWidth="175"/>
-		<TextField fx:id ="senderIP" layoutX="562" layoutY="44" prefHeight="23" prefWidth="175"/>
-		<TextField fx:id ="targetIP" layoutX="562" layoutY="76" prefHeight="23" prefWidth="175"/>
-		<Button fx:id ="getMACButton" onAction="#getMACAction" layoutX="654" layoutY="112" prefHeight="29" prefWidth="82" text="START"></Button>
-		
-				
-	</children>
-</AnchorPane>
 
+<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="491.0" prefWidth="953.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.Controller">
+   <children>
+      <AnchorPane layoutX="25.0" layoutY="22.0" prefHeight="458.0" prefWidth="675.0" style="-fx-background-color: white;" AnchorPane.bottomAnchor="47.0" AnchorPane.leftAnchor="23.0" AnchorPane.rightAnchor="23.0" AnchorPane.topAnchor="47.0">
+         <children>
+            <AnchorPane layoutX="249.0" layoutY="27.0" prefHeight="343.0" prefWidth="602.0" style="-fx-background-color: white;" AnchorPane.bottomAnchor="27.0" AnchorPane.rightAnchor="14.0" AnchorPane.topAnchor="27.0">
+               <children>
+                  <JFXListView  fx:id="networkListView" layoutX="40.0" layoutY="29.0" prefHeight="83.0" prefWidth="442.0" AnchorPane.bottomAnchor="231.0" AnchorPane.leftAnchor="40.0" AnchorPane.rightAnchor="120.0" AnchorPane.topAnchor="29.0" >
+                  	<items>
+						<FXCollections fx:factory="observableArrayList"/>
+					</items>           
+                  </JFXListView>
+                  <JFXTextField fx:id ="myIP" layoutX="54.0" layoutY="131.0" prefHeight="41.0" prefWidth="177.0" promptText="My IP" AnchorPane.bottomAnchor="171.0" AnchorPane.leftAnchor="54.0" AnchorPane.rightAnchor="371.0" AnchorPane.topAnchor="131.0">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </JFXTextField>
+                  <JFXTextField fx:id ="senderIP" focusColor="#23bfad" layoutX="54.0" layoutY="182.0" prefHeight="41.0" prefWidth="177.0" promptText="Sender IP">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </JFXTextField>
+                  <JFXTextField fx:id ="targetIP" focusColor="#c2d324" layoutX="54.0" layoutY="234.0" prefHeight="41.0" prefWidth="177.0" promptText="Target IP">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </JFXTextField>
+                  <JFXButton fx:id ="getMACButton" onAction="#getMACAction" layoutX="63.0" layoutY="292.0" style="-fx-background-color: orange; -fx-background-radius: 5000;" text="Send" />
+                  <JFXButton fx:id ="pickButton" onAction="#networkPickAction" layoutX="520.0" layoutY="59.0" style="-fx-background-color: orange; -fx-background-radius: 5000;" text="Select" />
+                  <JFXTextArea  fx:id="textArea" editable="false" layoutX="264.0" layoutY="123.0" prefHeight="154.0" prefWidth="332.0" />
+               </children>
+            </AnchorPane>
+            <AnchorPane layoutX="14.0" layoutY="19.0" prefHeight="359.0" prefWidth="273.0" style="-fx-background-color: linear-gradient(to right top, #051937, #004d7a, #008793, #00bf72, #a8eb12); -fx-background-radius: 10;" AnchorPane.bottomAnchor="19.0" AnchorPane.leftAnchor="14.0" AnchorPane.topAnchor="19.0">
+               <children>
+                  <VBox layoutX="72.0" layoutY="151.0" prefHeight="58.0" prefWidth="130.0" AnchorPane.bottomAnchor="150.0" AnchorPane.leftAnchor="72.0" AnchorPane.rightAnchor="71.0" AnchorPane.topAnchor="151.0">
+                     <children>
+                        <Label text="#Team 5">
+                           <font>
+                              <Font size="10.0" />
+                           </font>
+                        </Label>
+                        <Label prefHeight="27.0" prefWidth="136.0" text="ARP Spoofing">
+                           <font>
+                              <Font size="20.0" />
+                           </font>
+                           <VBox.margin>
+                              <Insets />
+                           </VBox.margin>
+                        </Label>
+                     </children>
+                  </VBox>
+               </children>
+            </AnchorPane>
+         </children>
+      </AnchorPane>
+   </children>
+</AnchorPane>

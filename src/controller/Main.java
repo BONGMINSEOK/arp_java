@@ -36,7 +36,7 @@ public class Main extends Application {
 	public void SetLayout() {
 		try {
 			FXMLLoader loader = new FXMLLoader();
-			loader.setLocation(Main.class.getResource("../view/view.fxml"));
+			loader.setLocation(Main.class.getResource("/view/view.fxml"));
 			layout = (AnchorPane)loader.load();
 			Scene scene = new Scene(layout);
 			primaryStage.setScene(scene);
