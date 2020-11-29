@@ -12,7 +12,7 @@
 <?import javafx.collections.*?>
 
 
-<AnchorPane maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="491.0" prefWidth="953.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.Controller">
+<AnchorPane style="-fx-background-color: white;" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="491.0" prefWidth="953.0" xmlns="http://javafx.com/javafx/8.0.171" xmlns:fx="http://javafx.com/fxml/1" fx:controller="controller.Controller">
    <children>
       <AnchorPane layoutX="25.0" layoutY="22.0" prefHeight="458.0" prefWidth="675.0" style="-fx-background-color: white;" AnchorPane.bottomAnchor="47.0" AnchorPane.leftAnchor="23.0" AnchorPane.rightAnchor="23.0" AnchorPane.topAnchor="47.0">
          <children>
@@ -38,8 +38,9 @@
                         <Font size="14.0" />
                      </font>
                   </JFXTextField>
-                  <JFXButton fx:id ="getMACButton" onAction="#getMACAction" layoutX="63.0" layoutY="292.0" style="-fx-background-color: orange; -fx-background-radius: 5000;" text="Send" />
+                  <JFXButton fx:id ="getMACButton" onAction="#getMACAction" layoutX="175.0" layoutY="292.0" style="-fx-background-color: orange; -fx-background-radius: 5000;" text="Send" />
                   <JFXButton fx:id ="pickButton" onAction="#networkPickAction" layoutX="520.0" layoutY="59.0" style="-fx-background-color: orange; -fx-background-radius: 5000;" text="Select" />
+                  <JFXButton fx:id = "stopButton" onAction = "#stopAction" layoutX="530.0" layoutY="292.0" style="-fx-background-color: orange; -fx-background-radius: 5000;"  text="Stop"/>
                   <JFXTextArea  fx:id="textArea" editable="false" layoutX="264.0" layoutY="123.0" prefHeight="154.0" prefWidth="332.0" />
                </children>
             </AnchorPane>

